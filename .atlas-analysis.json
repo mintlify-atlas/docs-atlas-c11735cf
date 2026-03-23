@@ -1,0 +1,86 @@
+{
+  "projectType": "saas",
+  "projectName": "Karma LMS",
+  "projectDescription": "A modern Learning Management System web application built with Angular, enabling educators and learners to manage courses, track progress, and engage with educational content.",
+  "theme": "almond",
+  "primaryColor": "#3cbcab",
+  "lightColor": "#349b8b",
+  "darkColor": "#949494",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart", "installation"]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/courses",
+              "features/learners",
+              "features/instructors",
+              "features/assessments",
+              "features/progress-tracking"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/environment",
+              "configuration/authentication",
+              "configuration/theming"
+            ]
+          },
+          {
+            "group": "Development",
+            "pages": [
+              "development/setup",
+              "development/architecture",
+              "development/testing",
+              "development/building"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["api/overview", "api/authentication"]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/courses",
+              "api/users",
+              "api/enrollments",
+              "api/assessments"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Course management and delivery",
+    "Learner enrollment and progress tracking",
+    "Instructor and admin dashboards",
+    "Assessment and quiz engine",
+    "Angular-based responsive UI",
+    "Built with Angular CLI v20.3.5"
+  ],
+  "publicApiSurface": [
+    "GET /api/courses",
+    "POST /api/courses",
+    "GET /api/users",
+    "POST /api/enrollments",
+    "GET /api/assessments",
+    "ng serve",
+    "ng build",
+    "ng test",
+    "ng generate"
+  ]
+}
