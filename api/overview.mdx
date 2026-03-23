@@ -1,0 +1,171 @@
+---
+title: API Overview
+description: Overview of the Karma LMS REST API — base URL, versioning, request/response format, and error handling.
+---
+
+The Karma LMS REST API gives you programmatic access to all core platform resources: courses, users, enrollments, and assessments. All communication happens over HTTPS using standard JSON request and response bodies.
+
+## Base URL
+
+All API endpoints are versioned under `/api/v1`:
+
+```
+https://your-domain.com/api/v1
+```
+
+Replace `your-domain.com` with your Karma LMS instance domain.
+
+## Request format
+
+Every request must include the following headers:
+
+```bash
+Content-Type: application/json
+Authorization: Bearer <your_access_token>
+```
+
+Request bodies must be valid JSON. Query parameters are URL-encoded.
+
+## Response envelope
+
+All successful responses are wrapped in a standard envelope:
+
+```json
+{
+  "data": { ... },
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "per_page": 20
+  },
+  "error": null
+}
+```
+
+<ResponseField name="data" type="object | array">
+  The primary response payload. Can be a single object or an array of objects depending on the endpoint.
+</ResponseField>
+
+<ResponseField name="meta" type="object">
+  Pagination metadata included on list endpoints.
+  <Expandable title="properties">
+    <ResponseField name="total" type="number">
+      Total number of records matching the query.
+    </ResponseField>
+    <ResponseField name="page" type="number">
+      Current page number (1-indexed).
+    </ResponseField>
+    <ResponseField name="per_page" type="number">
+      Number of records returned per page.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="error" type="null | object">
+  `null` on success. Contains error details on failure.
+</ResponseField>
+
+## Error responses
+
+When a request fails, the `error` field is populated and `data` is `null`:
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "The request body is invalid.",
+    "details": [
+      {
+        "field": "email",
+        "issue": "Email address is already in use."
+      }
+    ]
+  }
+}
+```
+
+<ResponseField name="error.code" type="string">
+  A machine-readable error code. Common values: `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_ERROR`, `INTERNAL_ERROR`.
+</ResponseField>
+
+<ResponseField name="error.message" type="string">
+  A human-readable description of the error.
+</ResponseField>
+
+<ResponseField name="error.details" type="array">
+  An array of field-level validation issues. Only present on `422` responses.
+</ResponseField>
+
+## HTTP status codes
+
+| Status | Meaning |
+|--------|---------|
+| `200` | OK — request succeeded |
+| `201` | Created — resource created successfully |
+| `400` | Bad Request — malformed request syntax |
+| `401` | Unauthorized — missing or invalid token |
+| `403` | Forbidden — token valid but insufficient permissions |
+| `404` | Not Found — resource does not exist |
+| `422` | Unprocessable Entity — validation failed |
+| `500` | Internal Server Error — unexpected server failure |
+
+## Pagination
+
+List endpoints support cursor-free offset pagination via query parameters:
+
+<ParamField query="page" type="number" default="1">
+  Page number to retrieve, starting at 1.
+</ParamField>
+
+<ParamField query="per_page" type="number" default="20">
+  Number of records per page. Maximum is 100.
+</ParamField>
+
+Example paginated request:
+
+```bash
+curl https://your-domain.com/api/v1/courses?page=2&per_page=25 \
+  -H "Authorization: Bearer <your_access_token>"
+```
+
+## Rate limiting
+
+The API enforces a limit of **100 requests per minute** per access token. When you exceed this limit, the API returns a `429 Too Many Requests` response.
+
+Rate limit headers are included in every response:
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Requests allowed per minute |
+| `X-RateLimit-Remaining` | Requests remaining in current window |
+| `X-RateLimit-Reset` | Unix timestamp when the window resets |
+
+<Warning>
+  Exceeding the rate limit will result in a `429` response. Implement exponential backoff in your client to handle this gracefully.
+</Warning>
+
+## Versioning
+
+The API uses URL-based versioning. The current version is `v1`. When breaking changes are introduced, a new version path (e.g., `/api/v2`) will be released. Previous versions remain available for a deprecation period announced in advance.
+
+## Explore the API
+
+<Columns cols={2}>
+  <Card title="Authentication" icon="lock" href="/api/authentication" color="#3cbcab">
+    Obtain and manage Bearer tokens for API access.
+  </Card>
+  <Card title="Courses" icon="book-open" href="/api/courses" color="#3cbcab">
+    Create, read, update, and delete learning courses.
+  </Card>
+  <Card title="Users" icon="users" href="/api/users" color="#3cbcab">
+    Manage learner and instructor accounts.
+  </Card>
+  <Card title="Enrollments" icon="user-check" href="/api/enrollments" color="#3cbcab">
+    Enroll learners in courses and track progress.
+  </Card>
+  <Card title="Assessments" icon="clipboard-list" href="/api/assessments" color="#3cbcab">
+    Manage quizzes and process learner submissions.
+  </Card>
+</Columns>

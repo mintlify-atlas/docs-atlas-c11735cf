@@ -1,0 +1,100 @@
+---
+title: Courses
+description: Create, manage, and deliver structured courses in Karma LMS.
+keywords: ['courses', 'modules', 'lessons', 'content', 'LMS', 'Karma']
+---
+
+Courses are the primary unit of learning in Karma LMS. Each course is a self-contained learning experience organized into modules and lessons, with configurable enrollment, visibility, and prerequisite rules.
+
+## Course structure
+
+Karma LMS uses a three-level content hierarchy:
+
+- **Course** — the top-level container with its own title, description, cover image, and settings.
+- **Module** — a thematic grouping of lessons within a course (e.g., "Introduction", "Advanced Topics").
+- **Lesson** — an individual piece of learning content such as a video, reading, document, or quiz.
+
+This structure keeps large courses organized and allows learners to track their progress at both the module and lesson level.
+
+## Creating a course
+
+<Steps>
+  <Step title="Navigate to Courses">
+    From the left sidebar, select **Courses**. You will see a list of all courses you have access to manage. Click **Create Course** in the top-right corner.
+  </Step>
+  <Step title="Fill in course details">
+    Enter the course **Title**, **Description**, and **Category**. You can also upload a cover image and set an estimated duration. These fields appear on the course catalog card visible to learners.
+  </Step>
+  <Step title="Add modules">
+    Inside the course editor, click **Add Module**. Give the module a name and an optional description. Modules appear in the order you create them; drag to reorder.
+  </Step>
+  <Step title="Add lessons to each module">
+    Select a module and click **Add Lesson**. Choose the lesson type (video, text, document, or quiz), enter the lesson title, and upload or link your content. Repeat for each lesson in the module.
+  </Step>
+  <Step title="Configure course settings">
+    Open the **Settings** tab to set enrollment type, visibility, prerequisites, and completion criteria. See [Course settings](#course-settings) below for details.
+  </Step>
+  <Step title="Publish the course">
+    When your content is ready, click **Publish**. Published courses become available to learners according to the visibility and enrollment settings you configured. You can also save as **Draft** to continue editing before making it available.
+  </Step>
+</Steps>
+
+## Course settings
+
+### Enrollment type
+
+<Tabs>
+  <Tab title="Open enrollment">
+    Any learner with access to the platform can self-enroll in the course. The course appears in the public catalog and learners can click **Enroll** to join immediately.
+  </Tab>
+  <Tab title="Invite-only">
+    Learners can only access the course if an instructor or admin explicitly enrolls them. The course does not appear in the self-service catalog. Use this for cohort-based or restricted programs.
+  </Tab>
+</Tabs>
+
+### Visibility
+
+| Setting | Description |
+|---|---|
+| **Public** | Visible in the course catalog to all authenticated learners. |
+| **Hidden** | Not listed in the catalog. Accessible only via direct link or admin/instructor enrollment. |
+| **Archived** | No longer accepting new enrollments. Existing learners retain access to their progress. |
+
+### Prerequisites
+
+You can require learners to complete one or more other courses before they can enroll in this course. In the **Prerequisites** section of course settings, search for and add any required courses. Learners who have not met the prerequisites will see the course listed but will not be able to enroll until they complete the required content.
+
+<Note>
+  Prerequisites are evaluated at enrollment time. Learners who are already enrolled before a prerequisite is added will not be affected.
+</Note>
+
+## Supported content types
+
+<AccordionGroup>
+  <Accordion title="Video">
+    Upload MP4, MOV, or WebM files directly, or paste a link to a hosted video (YouTube, Vimeo, or Wistia). Karma LMS tracks watch progress and can mark a lesson complete automatically when the learner reaches the end of the video.
+  </Accordion>
+  <Accordion title="Text">
+    A rich-text editor lets you write inline reading content with headings, lists, images, tables, and embedded links. Text lessons are marked complete when the learner scrolls to the bottom or clicks **Mark as Complete**.
+  </Accordion>
+  <Accordion title="Documents">
+    Upload PDF, DOCX, or PPTX files for learners to view in-browser or download. Document lessons can be configured to require a manual completion confirmation.
+  </Accordion>
+  <Accordion title="Quizzes">
+    Attach an assessment directly to a lesson. Quiz lessons are marked complete when the learner submits the quiz. Passing scores can be enforced before the learner can advance. See [Assessments](/features/assessments) for full details.
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<Columns cols={3}>
+  <Card title="Learners" icon="users" href="/features/learners">
+    Manage learner accounts and enroll them in courses.
+  </Card>
+  <Card title="Assessments" icon="circle-check" href="/features/assessments">
+    Build quizzes and graded assessments for your course content.
+  </Card>
+  <Card title="Progress Tracking" icon="chart-line" href="/features/progress-tracking">
+    Monitor completion rates and learner performance across courses.
+  </Card>
+</Columns>

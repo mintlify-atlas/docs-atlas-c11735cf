@@ -1,0 +1,103 @@
+---
+title: Progress Tracking
+description: Monitor learner progress, completion rates, and performance across courses.
+keywords: ['progress', 'tracking', 'completion', 'reports', 'analytics', 'LMS', 'Karma']
+---
+
+Karma LMS tracks learner activity continuously and surfaces that data through dashboards and reports tailored to three audiences: learners checking their own progress, instructors monitoring their courses, and admins overseeing the entire platform.
+
+## What is tracked
+
+Karma LMS records the following data points for each enrolled learner:
+
+| Data point | Description |
+|---|---|
+| **Lesson completions** | Whether each individual lesson has been completed, and when. |
+| **Assessment scores** | Score, pass/fail status, and number of attempts for every assessment. |
+| **Time spent** | Cumulative time the learner has spent in each lesson and across the course. |
+| **Course completion %** | The percentage of required lessons and assessments the learner has completed. |
+| **Last active** | The date and time the learner last accessed any content in the course. |
+
+## Completion criteria
+
+How a lesson is marked complete depends on its content type and the settings configured by the instructor.
+
+<Tabs>
+  <Tab title="Auto-complete">
+    Karma LMS can automatically mark a lesson complete when a learner meets a defined condition:
+
+    - **Video lessons** — marked complete when the learner watches at least 90% of the video.
+    - **Quiz lessons** — marked complete when the learner submits the assessment (a passing score is not required for completion unless the course enforces it).
+    - **Text and document lessons** — marked complete when the learner scrolls to the bottom of the content.
+  </Tab>
+  <Tab title="Manual completion">
+    For lessons where auto-detection is not appropriate, you can require the learner to click **Mark as Complete** before the lesson is counted toward their progress. This is useful for document downloads or lessons that require the learner to perform an offline task.
+  </Tab>
+</Tabs>
+
+## Learner progress view
+
+Learners access their personal progress dashboard by clicking **My Learning** in the left sidebar. The dashboard shows:
+
+- A progress ring for each enrolled course showing the overall completion percentage.
+- A module-by-module breakdown of completed and remaining lessons.
+- Assessment scores and pass/fail status for each quiz they have taken.
+- Estimated time remaining to complete each course, calculated from average time-per-lesson data.
+- Certificates earned for completed courses (if the course has a certificate configured).
+
+Learners cannot see other learners' progress data.
+
+## Instructor progress view
+
+Instructors can monitor progress at two levels from their course dashboard.
+
+### Class-wide view
+
+Navigate to a course and open the **Progress** tab. This view shows:
+
+- Overall enrollment count and how many learners have completed the course.
+- Completion rate trend over time (daily or weekly).
+- A heatmap of lesson engagement — which lessons have high or low completion rates, useful for identifying content that learners are skipping or struggling with.
+- Average assessment scores and pass rates per assessment.
+
+### Individual learner view
+
+Click any learner's name in the **Learners** tab to open their progress detail. You will see a full timeline of their activity: every lesson accessed, completion timestamps, assessment attempts, and scores.
+
+<Info>
+  The individual learner view is also accessible from the learner's user profile under **Users → [Learner Name] → Progress**.
+</Info>
+
+## Admin reports
+
+Admins have access to platform-wide reports under **Reports** in the left sidebar.
+
+<AccordionGroup>
+  <Accordion title="Enrollment report">
+    A snapshot of total enrollments across all courses, broken down by course, time period, and enrollment type (self-enrolled vs. admin-assigned). Useful for understanding platform adoption and course popularity.
+  </Accordion>
+  <Accordion title="Completion report">
+    Shows completion rates for every course on the platform. Filter by date range, department, or user group. Identify courses with low completion rates that may need content or UX improvements.
+  </Accordion>
+  <Accordion title="Assessment performance report">
+    Aggregate pass rates, average scores, and attempt counts for every assessment on the platform. Drill down into individual question performance to identify questions with unexpectedly low correct-answer rates.
+  </Accordion>
+  <Accordion title="Learner activity report">
+    Per-learner summary of total courses enrolled, courses completed, time spent on the platform, and last active date. Useful for compliance tracking or identifying inactive users who may need re-engagement.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+  All reports can be exported as CSV files. Click **Export** in the top-right corner of any report view. Exported files include all rows matching the current filter, making it straightforward to import progress data into external tools such as a spreadsheet or a data warehouse.
+</Tip>
+
+## Related
+
+<Columns cols={2}>
+  <Card title="Assessments" icon="circle-check" href="/features/assessments">
+    Understand how assessment scores feed into learner progress records.
+  </Card>
+  <Card title="Learners" icon="users" href="/features/learners">
+    Manage the learner accounts whose progress you are tracking.
+  </Card>
+</Columns>

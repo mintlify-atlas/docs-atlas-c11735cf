@@ -1,0 +1,150 @@
+---
+title: Environment configuration
+description: Configure environment variables and settings for Karma LMS.
+keywords: ['environment', 'configuration', 'angular', 'environment.ts', 'build']
+---
+
+Karma LMS uses Angular's built-in environment file system to manage configuration across development, staging, and production deployments. Environment files let you define values like API endpoints and authentication domains without hardcoding them throughout the application.
+
+## Environment files
+
+Angular CLI projects include environment files under `src/environments/`. The CLI swaps these files at build time based on the `--configuration` flag you pass to `ng build`.
+
+<Tree>
+  <Tree.Folder name="src" defaultOpen>
+    <Tree.Folder name="environments" defaultOpen>
+      <Tree.File name="environment.ts" />
+      <Tree.File name="environment.prod.ts" />
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
+
+## Environment file structure
+
+The default development environment file exports a single `environment` object:
+
+<CodeGroup>
+
+```typescript src/environments/environment.ts
+export const environment = {
+  production: false,
+  apiBaseUrl: 'http://localhost:3000/api',
+  authDomain: 'your-auth-domain',
+  appTitle: 'Karma LMS'
+};
+```
+
+```typescript src/environments/environment.prod.ts
+export const environment = {
+  production: true,
+  apiBaseUrl: 'https://api.yourdomain.com/api',
+  authDomain: 'your-auth-domain.auth0.com',
+  appTitle: 'Karma LMS'
+};
+```
+
+</CodeGroup>
+
+Angular automatically replaces `environment.ts` with `environment.prod.ts` when you build with the `production` configuration. You can define additional configurations (e.g., `staging`) in `angular.json`.
+
+## Configuration keys
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `production` | `boolean` | `false` | Enables Angular production mode. Disables debug tooling and enables optimizations. |
+| `apiBaseUrl` | `string` | `http://localhost:3000/api` | Base URL for all Karma LMS REST API calls. All HTTP service requests are prefixed with this value. |
+| `authDomain` | `string` | `''` | Your identity provider domain. Used to construct OAuth/SAML redirect URLs and token validation endpoints. |
+| `appTitle` | `string` | `'Karma LMS'` | Application title displayed in the browser tab and the top navigation bar. |
+
+## Building for different environments
+
+Pass `--configuration` to `ng build` to select the target environment file:
+
+<Tabs>
+  <Tab title="Production">
+    ```bash
+    ng build --configuration production
+    ```
+  </Tab>
+  <Tab title="Staging">
+    ```bash
+    ng build --configuration staging
+    ```
+  </Tab>
+  <Tab title="Development">
+    ```bash
+    ng build
+    ```
+
+    Running `ng build` without `--configuration` uses the `development` configuration by default.
+  </Tab>
+</Tabs>
+
+To define a custom `staging` configuration, add a `fileReplacements` entry to `angular.json`:
+
+```json angular.json (excerpt)
+{
+  "configurations": {
+    "staging": {
+      "fileReplacements": [
+        {
+          "replace": "src/environments/environment.ts",
+          "with": "src/environments/environment.staging.ts"
+        }
+      ]
+    }
+  }
+}
+```
+
+Then create `src/environments/environment.staging.ts` with your staging values.
+
+## Serving locally
+
+To run the development server with a specific environment:
+
+```bash
+ng serve --configuration staging
+```
+
+The default `ng serve` uses the `development` configuration.
+
+## Accessing environment values in code
+
+Import the environment object wherever you need it:
+
+```typescript app.service.ts
+import { environment } from '../environments/environment';
+
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private baseUrl = environment.apiBaseUrl;
+
+  getCourses() {
+    return this.http.get(`${this.baseUrl}/courses`);
+  }
+}
+```
+
+Angular replaces the import path at build time, so the compiled code always references the correct environment values.
+
+<Note>
+Never commit secrets — passwords, private API keys, or client secrets — to your environment files. These files are checked into version control and are not encrypted. Use a secrets manager or inject values at build time from your CI/CD environment instead.
+</Note>
+
+<Warning>
+In CI/CD pipelines, do not store production `environment.prod.ts` files in the repository. Instead, generate the file during the build step using environment variables injected by your pipeline. This prevents credentials from appearing in git history.
+
+```bash
+# Example: generate environment.prod.ts at build time
+cat > src/environments/environment.prod.ts << EOF
+export const environment = {
+  production: true,
+  apiBaseUrl: '${API_BASE_URL}',
+  authDomain: '${AUTH_DOMAIN}',
+  appTitle: 'Karma LMS'
+};
+EOF
+ng build --configuration production
+```
+</Warning>

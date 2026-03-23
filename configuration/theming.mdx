@@ -1,0 +1,191 @@
+---
+title: Theming
+description: Customize the look and feel of Karma LMS to match your brand.
+keywords: ['theming', 'branding', 'CSS', 'colors', 'typography', 'logo', 'styles']
+---
+
+Karma LMS is built with Angular and uses a combination of global CSS custom properties and component-scoped styles. You can adapt the visual appearance — colors, typography, logo, and application title — without modifying the core application logic.
+
+## How styles are organized
+
+Angular applies component encapsulation by default, which means each component's styles are scoped and do not leak into other components. Global styles live in `src/styles.css` and are the primary place to set brand-wide values through CSS custom properties.
+
+```text project structure
+src/
+├── styles.css              # Global styles and CSS custom properties
+├── assets/
+│   └── logo.png            # Application logo
+└── environments/
+    └── environment.ts      # App title and other config
+```
+
+## Brand colors
+
+Karma LMS ships with the following default brand palette:
+
+<Color variant="table">
+  <Color.Row title="Brand">
+    <Color.Item name="primary" value="#3cbcab" />
+    <Color.Item name="light" value="#349b8b" />
+    <Color.Item name="dark" value="#949494" />
+  </Color.Row>
+</Color>
+
+## Updating global CSS variables
+
+Open `src/styles.css` and update the `:root` block to change brand colors and other global values:
+
+```css src/styles.css
+:root {
+  --primary-color: #3cbcab;
+  --primary-light: #349b8b;
+  --primary-dark: #949494;
+  --text-color: #4a4a4a;
+  --background-color: #ffffff;
+  --surface-color: #f5f5f5;
+  --border-color: #e0e0e0;
+  --error-color: #d32f2f;
+  --success-color: #388e3c;
+}
+```
+
+All Karma LMS components reference these variables. Changing a value here propagates across the entire application.
+
+### Using variables in component styles
+
+When adding custom components or overriding existing ones, reference the CSS variables rather than hardcoding hex values:
+
+```css example component style
+.my-button {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.my-button:hover {
+  background-color: var(--primary-light);
+}
+```
+
+## Typography
+
+Karma LMS uses `Arial, sans-serif` as the base font stack for both headings and body text. To update typography, add your font import and update the relevant variables in `src/styles.css`:
+
+```css src/styles.css
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-family-base: 'Inter', Arial, sans-serif;
+  --font-family-heading: 'Inter', Arial, sans-serif;
+  --font-size-base: 16px;
+  --line-height-base: 1.5;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  font-weight: 600;
+}
+```
+
+## Updating the logo
+
+Replace the logo file at `src/assets/logo.png` with your own image. Keep the same filename to avoid updating references throughout the codebase, or update the `src` attribute in the navigation component if you use a different filename.
+
+<Steps>
+  <Step title="Prepare your logo file">
+    Export your logo as a PNG or SVG. Recommended dimensions for the navigation bar logo are **160 × 40 px** at 2× resolution (320 × 80 px for retina displays). Keep the background transparent.
+  </Step>
+  <Step title="Replace the asset">
+    Copy your logo file to `src/assets/`:
+
+    ```bash
+    cp your-logo.png src/assets/logo.png
+    ```
+
+    If you use an SVG, copy it to `src/assets/logo.svg` and update the image reference.
+  </Step>
+  <Step title="Update the template reference (if needed)">
+    If your filename differs from `logo.png`, open the navigation component and update the `src` attribute:
+
+    ```html src/app/layout/navbar/navbar.component.html
+    <img src="assets/logo.svg" alt="Karma LMS" class="navbar-logo" />
+    ```
+  </Step>
+</Steps>
+
+## Setting the application title
+
+The application title appears in the browser tab and the top navigation bar. Set it in `src/environments/environment.ts`:
+
+```typescript src/environments/environment.ts
+export const environment = {
+  production: false,
+  apiBaseUrl: 'http://localhost:3000/api',
+  authDomain: 'your-auth-domain',
+  appTitle: 'Acme Learning'
+};
+```
+
+Update the same key in `src/environments/environment.prod.ts` for production builds. The `AppComponent` reads this value and passes it to Angular's `Title` service:
+
+```typescript src/app/app.component.ts
+import { environment } from '../environments/environment';
+import { Title } from '@angular/platform-browser';
+
+@Component({ selector: 'app-root', templateUrl: './app.component.html' })
+export class AppComponent implements OnInit {
+  constructor(private titleService: Title) {}
+
+  ngOnInit() {
+    this.titleService.setTitle(environment.appTitle);
+  }
+}
+```
+
+## Dark mode
+
+To support dark mode, add a `[data-theme="dark"]` block to `src/styles.css` and toggle the attribute on the `<html>` element:
+
+```css src/styles.css
+[data-theme='dark'] {
+  --primary-color: #3cbcab;
+  --primary-light: #4dd4c2;
+  --text-color: #e0e0e0;
+  --background-color: #1a1a2e;
+  --surface-color: #16213e;
+  --border-color: #333;
+}
+```
+
+```typescript src/app/services/theme.service.ts
+@Injectable({ providedIn: 'root' })
+export class ThemeService {
+  toggleDarkMode(enable: boolean) {
+    document.documentElement.setAttribute(
+      'data-theme',
+      enable ? 'dark' : 'light'
+    );
+  }
+}
+```
+
+<Tip>
+Use Angular's `ViewEncapsulation.None` on a component only when you intentionally need its styles to affect child components or global layout. For most customizations, prefer updating `styles.css` CSS variables so your changes remain centralized and maintainable.
+</Tip>
+
+<Note>
+After making changes to `styles.css` or other static assets, you must rebuild the application for the changes to take effect in production:
+
+```bash
+ng build --configuration production
+```
+
+During development, `ng serve` watches for file changes and automatically recompiles, so you will see updates in the browser without a manual rebuild.
+</Note>

@@ -1,0 +1,192 @@
+---
+title: Installation
+description: Detailed installation and environment setup for Karma LMS.
+---
+
+This page covers everything you need to install Karma LMS locally, from prerequisites through running the development server, along with a reference for Angular CLI commands and common troubleshooting steps.
+
+## Prerequisites
+
+Confirm the following tools are available on your system before proceeding.
+
+| Requirement | Minimum version | Notes |
+|---|---|---|
+| Node.js | 18.x | LTS recommended. Download from [nodejs.org](https://nodejs.org). |
+| npm | Bundled with Node.js | Alternatively, use yarn or pnpm. |
+| Angular CLI | 20.x | Installed globally via npm. |
+| Git | Any recent version | Required to clone the repository. |
+
+To check your current versions:
+
+```bash
+node --version
+npm --version
+ng version
+git --version
+```
+
+## Full installation
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the Karma LMS repository from GitHub to your local machine.
+
+    ```bash
+    git clone https://github.com/GEMS-INNOVATIONS/gems-lms-web.git
+    ```
+  </Step>
+
+  <Step title="Navigate to the project directory">
+    Move into the cloned project folder.
+
+    ```bash
+    cd gems-lms-web
+    ```
+
+    All subsequent commands should be run from this directory.
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all project dependencies defined in `package.json`.
+
+    <CodeGroup>
+
+    ```bash npm
+    npm install
+    ```
+
+    ```bash yarn
+    yarn install
+    ```
+
+    ```bash pnpm
+    pnpm install
+    ```
+
+    </CodeGroup>
+
+    This downloads Angular packages and all third-party libraries into the `node_modules/` directory. The first install may take a minute or two depending on your network speed.
+  </Step>
+
+  <Step title="Start the development server">
+    Start the Angular development server with live reload.
+
+    ```bash
+    ng serve
+    ```
+
+    The CLI compiles the application and starts a local HTTP server. When compilation finishes you will see output similar to:
+
+    ```
+    ✔ Compiled successfully.
+    Watch mode enabled. Watching for file changes...
+      ➜  Local:   http://localhost:4200/
+    ```
+
+    <Note>
+      To run the server on a different port, use the `--port` flag:
+
+      ```bash
+      ng serve --port 4201
+      ```
+
+      This is useful when port 4200 is already occupied by another process.
+    </Note>
+  </Step>
+
+  <Step title="Open the application in your browser">
+    Navigate to the following URL in your browser:
+
+    ```
+    http://localhost:4200
+    ```
+
+    The Karma LMS interface will load. The server watches all source files and automatically recompiles and reloads the browser on every save.
+  </Step>
+</Steps>
+
+## Angular CLI command reference
+
+The following Angular CLI commands are available in this project. Run them from the `gems-lms-web` directory.
+
+| Command | Description |
+|---|---|
+| `ng serve` | Starts the local development server with live reload at `http://localhost:4200`. |
+| `ng build` | Compiles the application into static output files in `dist/`. |
+| `ng test` | Runs unit tests using Karma and Jasmine. Watches for file changes by default. |
+| `ng generate` | Scaffolds new Angular building blocks (components, services, modules, pipes, etc.). |
+| `ng e2e` | Runs end-to-end tests. Requires a configured e2e test runner such as Cypress or Playwright. |
+
+<Info>
+  For a production-optimized build, pass the `--configuration production` flag to `ng build`. This enables ahead-of-time (AOT) compilation, tree-shaking, and output minification.
+
+  ```bash
+  ng build --configuration production
+  ```
+
+  Production build output is written to `dist/gems-lms-web/` and is ready to be served by any static file server or CDN.
+</Info>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Port 4200 is already in use">
+    If you see an error such as `Port 4200 is already in use`, another process is occupying the default Angular port. You have two options:
+
+    **Option 1:** Start the server on a different port.
+
+    ```bash
+    ng serve --port 4201
+    ```
+
+    **Option 2:** Find and stop the process using port 4200.
+
+    ```bash
+    # macOS / Linux
+    lsof -ti tcp:4200 | xargs kill
+
+    # Windows (PowerShell)
+    Get-Process -Id (Get-NetTCPConnection -LocalPort 4200).OwningProcess | Stop-Process
+    ```
+
+    Then re-run `ng serve`.
+  </Accordion>
+
+  <Accordion title="node_modules is missing or incomplete">
+    If the development server fails to start with module-not-found errors, the `node_modules/` directory may be missing or out of date. Run a clean install:
+
+    ```bash
+    # Remove existing node_modules and lock file, then reinstall
+    rm -rf node_modules
+    npm install
+    ```
+
+    If you are using yarn or pnpm, substitute the corresponding install command. This is also the recommended fix after switching branches that have different dependency versions.
+  </Accordion>
+
+  <Accordion title="Angular CLI version mismatch">
+    The global Angular CLI version and the version required by the project must be compatible. A mismatch can cause build errors or unexpected behavior.
+
+    Check the versions:
+
+    ```bash
+    # Global CLI version
+    ng version
+
+    # Project's required version (in package.json)
+    cat package.json | grep "@angular/cli"
+    ```
+
+    If the versions differ significantly, update the global CLI to match the project:
+
+    ```bash
+    npm install -g @angular/cli@20
+    ```
+
+    Alternatively, use `npx` to run the project-local version of the CLI without affecting your global install:
+
+    ```bash
+    npx ng serve
+    ```
+  </Accordion>
+</AccordionGroup>

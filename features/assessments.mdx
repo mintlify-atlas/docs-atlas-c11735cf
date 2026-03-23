@@ -1,0 +1,94 @@
+---
+title: Assessments
+description: Build quizzes and assessments to evaluate learner understanding in Karma LMS.
+keywords: ['assessments', 'quizzes', 'grading', 'questions', 'LMS', 'Karma']
+---
+
+Karma LMS includes a built-in assessment engine that lets instructors build quizzes and tests directly within a course. Assessments can be used to check comprehension at the end of a module, enforce a passing score before a learner advances, or serve as a final graded exam.
+
+## Question types
+
+<Tabs>
+  <Tab title="Multiple choice">
+    Present the learner with a question and two or more answer options. Mark one (or more) options as correct. Multiple choice questions are graded automatically.
+  </Tab>
+  <Tab title="True / False">
+    A simplified multiple choice format with exactly two options: True and False. Graded automatically.
+  </Tab>
+  <Tab title="Short answer">
+    The learner types a free-text response. Short answer questions require manual review by an instructor before a score is recorded.
+  </Tab>
+  <Tab title="Matching">
+    The learner drags items from one column to match them with items in a second column. Matching questions are graded automatically based on all correct pairs.
+  </Tab>
+</Tabs>
+
+## Creating an assessment
+
+<Steps>
+  <Step title="Navigate to the course">
+    Open the course in which you want to add an assessment. Select the module where the assessment should appear.
+  </Step>
+  <Step title="Add an assessment lesson">
+    Click **Add Lesson** and choose **Quiz / Assessment** as the lesson type. Give the assessment a title (e.g., "Module 2 Knowledge Check").
+  </Step>
+  <Step title="Configure assessment settings">
+    Before adding questions, set the core options:
+
+    - **Passing score** — the minimum percentage (e.g., 70%) a learner must achieve to pass.
+    - **Time limit** — optional. Set a maximum time in minutes. The timer starts when the learner opens the assessment.
+    - **Attempt limit** — how many times a learner may submit the assessment (set to **Unlimited** for open retakes).
+    - **Randomize questions** — shuffle the question order for each attempt to reduce answer sharing.
+    - **Show results immediately** — display the learner's score and correct answers as soon as they submit.
+  </Step>
+  <Step title="Add questions">
+    Click **Add Question** and select the question type. Fill in the question text, answer options, and mark the correct answer(s). Repeat for each question.
+
+    You can reorder questions by dragging them and set individual point values if you want questions to carry different weight.
+  </Step>
+  <Step title="Publish the assessment">
+    Click **Save** to save a draft, or **Publish** to make the assessment live. Published assessments are immediately accessible to enrolled learners.
+  </Step>
+</Steps>
+
+## Assessment settings reference
+
+| Setting | Description | Default |
+|---|---|---|
+| **Passing score** | Minimum percentage to pass | 70% |
+| **Time limit** | Maximum time allowed (minutes) | None |
+| **Attempt limit** | Number of allowed submissions | Unlimited |
+| **Randomize questions** | Shuffle question order per attempt | Off |
+| **Show results immediately** | Display score and answers on submission | On |
+| **Allow review** | Let learners revisit their answers after submission | On |
+
+## Grading
+
+**Automatically graded** question types (multiple choice, true/false, matching) are scored immediately upon submission. The learner's result is recorded and visible in their progress dashboard.
+
+**Short answer** questions enter a **Pending Review** state after submission. The instructor receives a notification and must navigate to **Assessments → Submissions** to read each response and assign a score manually. The learner's overall assessment result is not finalized until all short-answer questions have been reviewed.
+
+<Note>
+  If an assessment contains both auto-graded and short-answer questions, the learner will see a "Pending" status until the instructor completes the manual review. Configure your retake policy carefully if short-answer review delays could block learner progress.
+</Note>
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="How do I set a passing score?">
+    Open the assessment editor and go to the **Settings** tab. Enter the desired percentage in the **Passing score** field. Learners who score below this threshold will see a "Not Passed" result and, depending on your attempt limit settings, may be able to retake the assessment.
+  </Accordion>
+  <Accordion title="Can learners retake an assessment?">
+    Yes. By default, attempt limits are set to **Unlimited**, allowing learners to retake as many times as needed. To restrict retakes, set the **Attempt limit** to a specific number in the assessment settings. Once the limit is reached, the learner cannot submit again unless an instructor manually resets their attempts from the learner's profile.
+  </Accordion>
+  <Accordion title="How are assessment results reported?">
+    Results are recorded in real time and visible in three places:
+
+    - **Learner dashboard** — the learner sees their score, pass/fail status, and attempt history.
+    - **Instructor dashboard** — the instructor sees aggregate pass rates, score distributions, and individual learner scores.
+    - **Admin reports** — platform-wide assessment completion and pass rate data is available in the Reports section. Results can be exported as a CSV for external analysis.
+  </Accordion>
+  <Accordion title="Can I import questions from an existing question bank?">
+    Karma LMS supports importing questions via a structured CSV template. Navigate to the assessment editor, click **Import Questions**, and download the template. Fill in your questions and answers, then upload the file. Imported questions appear in the question list for review before the assessment is published.
+  </Accordion>
+</AccordionGroup>

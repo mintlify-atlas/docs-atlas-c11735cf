@@ -1,0 +1,219 @@
+---
+title: Authentication
+description: Configure user authentication and access control for Karma LMS.
+keywords: ['authentication', 'SSO', 'SAML', 'OAuth', 'roles', 'access control', 'session']
+---
+
+Karma LMS supports multiple authentication strategies and a role-based access control system. This page covers how to configure your authentication method, connect an identity provider, and manage user roles and sessions.
+
+## Supported authentication methods
+
+<Columns cols={3}>
+  <Card title="Username and password" icon="lock">
+    Built-in credential-based login. Suitable for smaller deployments where you manage users directly in Karma LMS.
+  </Card>
+  <Card title="SSO (SAML / OAuth 2.0)" icon="building-columns">
+    Delegate authentication to an external identity provider such as Okta, Azure AD, Google Workspace, or any SAML 2.0 / OAuth 2.0 compliant IdP.
+  </Card>
+  <Card title="Token-based (JWT)" icon="key">
+    Issue and validate JSON Web Tokens for API access and headless or embedded LMS integrations.
+  </Card>
+</Columns>
+
+## Configuring authentication
+
+<Steps>
+  <Step title="Set authDomain in environment.ts">
+    Open `src/environments/environment.ts` and set `authDomain` to your identity provider's domain:
+
+    ```typescript src/environments/environment.ts
+    export const environment = {
+      production: false,
+      apiBaseUrl: 'http://localhost:3000/api',
+      authDomain: 'karma-lms.auth0.com',
+      appTitle: 'Karma LMS'
+    };
+    ```
+
+    For production, update `environment.prod.ts` with your production IdP domain.
+  </Step>
+
+  <Step title="Configure your identity provider">
+    Register Karma LMS as an application in your identity provider. The required values depend on your auth method:
+
+    <Tabs>
+      <Tab title="OAuth 2.0 / OIDC">
+        Configure the following in your OAuth provider:
+
+        | Setting | Value |
+        |---|---|
+        | Allowed callback URL | `https://yourdomain.com/auth/callback` |
+        | Allowed logout URL | `https://yourdomain.com/logout` |
+        | Allowed web origins | `https://yourdomain.com` |
+        | Grant type | Authorization Code with PKCE |
+
+        ```typescript src/app/auth/auth.config.ts
+        export const authConfig = {
+          domain: environment.authDomain,
+          clientId: 'YOUR_CLIENT_ID',
+          authorizationParams: {
+            redirect_uri: window.location.origin + '/auth/callback',
+            scope: 'openid profile email'
+          }
+        };
+        ```
+      </Tab>
+      <Tab title="SAML 2.0">
+        Provide your IdP with the following service provider settings:
+
+        | Setting | Value |
+        |---|---|
+        | SP Entity ID | `https://yourdomain.com/saml/metadata` |
+        | ACS URL | `https://yourdomain.com/saml/callback` |
+        | Name ID format | `urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress` |
+
+        Obtain the IdP metadata XML and configure it in your Karma LMS backend's SAML settings.
+      </Tab>
+      <Tab title="Username / password">
+        No external IdP is required. Karma LMS manages credentials internally. Ensure the backend `authDomain` points to the Karma LMS API:
+
+        ```typescript src/environments/environment.ts
+        export const environment = {
+          production: false,
+          apiBaseUrl: 'http://localhost:3000/api',
+          authDomain: 'localhost:3000',
+          appTitle: 'Karma LMS'
+        };
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+
+  <Step title="Map user roles">
+    Karma LMS uses three built-in roles. Map the claims or groups from your IdP to these roles in your backend configuration:
+
+    ```json role-mapping.json
+    {
+      "roleMappings": [
+        { "idpGroup": "lms-admins", "karmaRole": "admin" },
+        { "idpGroup": "lms-instructors", "karmaRole": "instructor" },
+        { "idpGroup": "lms-learners", "karmaRole": "learner" }
+      ]
+    }
+    ```
+
+    If you use username/password auth, roles are assigned directly to users in the Karma LMS admin panel under **Users &rarr; Edit user &rarr; Role**.
+  </Step>
+</Steps>
+
+## Role-based access control
+
+Karma LMS enforces access at the route and API level based on the authenticated user's role.
+
+| Feature | Admin | Instructor | Learner |
+|---|:---:|:---:|:---:|
+| Manage users and roles | Yes | No | No |
+| Create and publish courses | Yes | Yes | No |
+| Edit their own courses | Yes | Yes | No |
+| View all learner progress | Yes | Yes | No |
+| Enroll learners in courses | Yes | Yes | No |
+| Access assigned courses | Yes | Yes | Yes |
+| Complete lessons and quizzes | Yes | Yes | Yes |
+| View personal progress report | Yes | Yes | Yes |
+| Access admin dashboard | Yes | No | No |
+| Manage system settings | Yes | No | No |
+
+Angular route guards (`AuthGuard`, `RoleGuard`) enforce these permissions on the frontend. Backend API endpoints perform a secondary role check on every request.
+
+## Session management
+
+### Token expiry
+
+Karma LMS uses short-lived access tokens combined with longer-lived refresh tokens. Default durations:
+
+| Token | Default expiry |
+|---|---|
+| Access token | 60 minutes |
+| Refresh token | 7 days |
+| Remember me (refresh token) | 30 days |
+
+You can adjust these values in the backend authentication configuration or in your IdP's application settings.
+
+### Refresh token rotation
+
+Karma LMS rotates refresh tokens on each use. If a previously issued refresh token is presented (indicating a possible token theft), the session is immediately invalidated and the user is signed out.
+
+```typescript src/app/auth/token-interceptor.ts
+// The HTTP interceptor automatically attaches the access token
+// and handles 401 responses by attempting a token refresh.
+@Injectable()
+export class TokenInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const token = this.authService.getAccessToken();
+    const authReq = token
+      ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+      : req;
+    return next.handle(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          return this.authService.refreshToken().pipe(
+            switchMap(() => next.handle(this.attachToken(req)))
+          );
+        }
+        return throwError(() => error);
+      })
+    );
+  }
+}
+```
+
+<Note>
+All Karma LMS API endpoints require a valid bearer token. Requests without a token, or with an expired token that cannot be refreshed, receive a `401 Unauthorized` response and the user is redirected to the login page.
+</Note>
+
+<Warning>
+If your Karma LMS API is hosted on a different domain than the frontend, you must configure CORS on the API server to allow requests from the frontend origin. Without this, browser preflight requests will fail and authentication will not work.
+
+```typescript cors configuration (Node.js / Express example)
+app.use(cors({
+  origin: 'https://app.yourdomain.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Authorization', 'Content-Type'],
+  credentials: true
+}));
+```
+
+For other backends, consult your framework's CORS documentation.
+</Warning>
+
+## Frequently asked questions
+
+<AccordionGroup>
+  <Accordion title="How do I reset a user's password?">
+    **Username/password auth:** An admin can trigger a password reset from the admin panel under **Users &rarr; Select user &rarr; Reset password**. This sends a reset link to the user's registered email address.
+
+    **SSO auth:** Password resets are handled entirely by your identity provider. Direct the user to your IdP's self-service portal (e.g., the Okta or Azure AD end-user dashboard). Karma LMS does not manage IdP credentials.
+
+    If the reset email is not received, check that the Karma LMS backend has a valid SMTP configuration and that the user's email address is correct.
+  </Accordion>
+
+  <Accordion title="How do I configure SSO?">
+    Follow the steps in the [Configuring authentication](#configuring-authentication) section above. In summary:
+
+    1. Set `authDomain` in `environment.ts` to your IdP domain.
+    2. Register Karma LMS as an OAuth 2.0 / OIDC or SAML 2.0 application in your IdP.
+    3. Supply the callback and logout URLs from the table above.
+    4. Configure role mappings so IdP groups map to Karma LMS roles.
+    5. Rebuild and deploy: `ng build --configuration production`.
+
+    Contact your IdP's support team if you need help obtaining client IDs, secrets, or metadata URLs specific to their platform.
+  </Accordion>
+
+  <Accordion title="How do I revoke a user's access?">
+    **Immediate revocation:** Deactivate or delete the user in the Karma LMS admin panel under **Users &rarr; Select user &rarr; Deactivate**. Active sessions using a valid access token will continue to work until the token expires (up to 60 minutes). Refresh tokens for deactivated users are rejected immediately.
+
+    **SSO users:** You must also revoke the session in your identity provider. Karma LMS relies on the IdP for authentication; revoking only in Karma LMS prevents new logins but does not terminate an existing IdP session.
+
+    **Force sign-out:** To immediately terminate all sessions for a user, revoke their refresh tokens from the admin panel under **Users &rarr; Select user &rarr; Revoke all sessions**.
+  </Accordion>
+</AccordionGroup>

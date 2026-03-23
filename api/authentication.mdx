@@ -1,0 +1,139 @@
+---
+title: API Authentication
+description: Authenticate with the Karma LMS API using Bearer tokens.
+---
+
+The Karma LMS API uses **JWT Bearer token** authentication. Every request must include a valid access token in the `Authorization` header. Tokens are obtained by logging in with your credentials and must be refreshed before they expire.
+
+## How authentication works
+
+<Steps>
+  <Step title="Log in with your credentials">
+    Send a `POST` request to `/api/v1/auth/login` with your `email` and `password`. The API returns an `access_token` and a `refresh_token`.
+  </Step>
+  <Step title="Include the token in every request">
+    Add the `Authorization` header to all subsequent API requests:
+
+    ```bash
+    Authorization: Bearer <access_token>
+    ```
+  </Step>
+  <Step title="Refresh the token before it expires">
+    Access tokens expire after **1 hour**. Use the `refresh_token` to obtain a new access token without re-entering credentials.
+  </Step>
+  <Step title="Log out to revoke the token">
+    Call `POST /api/v1/auth/logout` to invalidate the token server-side when the session ends.
+  </Step>
+</Steps>
+
+## Login
+
+`POST /api/v1/auth/login`
+
+Exchange credentials for an access token and refresh token.
+
+### Request parameters
+
+<ParamField body="email" type="string" required>
+  The user's email address.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  The user's password. Must be at least 8 characters.
+</ParamField>
+
+### Response fields
+
+<ResponseField name="access_token" type="string" required>
+  JWT used to authenticate API requests. Include this in the `Authorization: Bearer` header.
+</ResponseField>
+
+<ResponseField name="refresh_token" type="string" required>
+  Long-lived token used to obtain new access tokens. Store this securely.
+</ResponseField>
+
+<ResponseField name="expires_in" type="number" required>
+  Number of seconds until the access token expires. Typically `3600` (1 hour).
+</ResponseField>
+
+<ResponseField name="token_type" type="string" required>
+  Always `"Bearer"`.
+</ResponseField>
+
+### Example
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://your-domain.com/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "instructor@example.com",
+    "password": "your_password"
+  }'
+```
+
+```json response
+{
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c3JfYWJjMTIzIiwicm9sZSI6Imluc3RydWN0b3IiLCJpYXQiOjE3MTE4MDAwMDAsImV4cCI6MTcxMTgwMzYwMH0.signature",
+    "refresh_token": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4gdmFsdWU",
+    "expires_in": 3600,
+    "token_type": "Bearer"
+  },
+  "meta": null,
+  "error": null
+}
+```
+
+</CodeGroup>
+
+## Refresh token
+
+`POST /api/v1/auth/refresh`
+
+Obtain a new access token using a valid refresh token. The response includes a new `access_token` and resets the expiry. The refresh token itself is rotated on each use.
+
+<ParamField body="refresh_token" type="string" required>
+  A valid refresh token obtained from the login response.
+</ParamField>
+
+```bash
+curl -X POST https://your-domain.com/api/v1/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refresh_token": "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4gdmFsdWU"}'
+```
+
+## Logout
+
+`POST /api/v1/auth/logout`
+
+Revokes the current access token and its associated refresh token server-side. After logout, both tokens are immediately invalid.
+
+```bash
+curl -X POST https://your-domain.com/api/v1/auth/logout \
+  -H "Authorization: Bearer <access_token>"
+```
+
+<Warning>
+  Calling `/auth/logout` immediately invalidates both the access token and the refresh token. Any in-flight requests using the revoked token will receive a `401 Unauthorized` response.
+</Warning>
+
+## Token expiry
+
+| Token type | Lifetime |
+|------------|----------|
+| Access token | 1 hour |
+| Refresh token | 7 days |
+
+Refresh tokens are single-use and rotated on every refresh call. If a refresh token is used more than once (e.g., due to a replay attack), both tokens are revoked immediately.
+
+## Security considerations
+
+<Note>
+  For security-sensitive applications, store tokens in memory or a secure HTTP-only cookie rather than `localStorage`. Tokens stored in `localStorage` are accessible to any JavaScript on the page, making them vulnerable to XSS attacks.
+</Note>
+
+<Tip>
+  Implement proactive token refresh in your client. Check `expires_in` after login and schedule a refresh request 5 minutes before expiry to avoid authentication interruptions.
+</Tip>

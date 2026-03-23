@@ -1,0 +1,77 @@
+---
+title: Instructors
+description: Instructor roles, permissions, and tools available in Karma LMS.
+keywords: ['instructors', 'roles', 'permissions', 'dashboard', 'LMS', 'Karma']
+---
+
+Instructors in Karma LMS are trusted users who create and manage course content, monitor learner activity, and review assessment results. They have elevated permissions compared to learners but operate within the boundaries set by platform admins.
+
+## Instructor vs. admin permissions
+
+| Action | Instructor | Admin |
+|---|:---:|:---:|
+| Create and edit courses | Yes | Yes |
+| Publish courses | Yes | Yes |
+| Enroll and unenroll learners in their courses | Yes | Yes |
+| View learner progress for their courses | Yes | Yes |
+| Create and grade assessments | Yes | Yes |
+| Access all courses platform-wide | No | Yes |
+| Create and delete user accounts | No | Yes |
+| Assign or change user roles | No | Yes |
+| View platform-wide reports | No | Yes |
+| Configure platform settings and integrations | No | Yes |
+
+## Assigning the instructor role
+
+<Steps>
+  <Step title="Navigate to Users">
+    From the left sidebar, select **Users** and search for the user you want to promote.
+  </Step>
+  <Step title="Open the user profile">
+    Click the user's name to open their profile page.
+  </Step>
+  <Step title="Change the role">
+    In the **Role** field, select **Instructor** from the dropdown. Click **Save**.
+  </Step>
+  <Step title="Assign courses (optional)">
+    After saving, navigate to any course and add the user as an instructor from the **Instructors** tab within the course settings. This gives them authoring and management access for that specific course.
+  </Step>
+</Steps>
+
+<Warning>
+  Changing a user's role from Learner to Instructor will immediately grant them course authoring permissions. Ensure the user understands their new responsibilities before promoting them.
+</Warning>
+
+## Instructor dashboard
+
+Instructors have access to a dedicated dashboard that surfaces activity across the courses they manage. The dashboard includes:
+
+- **Course overview** — a summary of each course, including total enrollments, active learners this week, and overall completion rate.
+- **Learner activity feed** — recent lesson completions, assessment submissions, and new enrollments across all instructor-managed courses.
+- **Assessment results** — a breakdown of quiz scores, pass/fail rates, and any short-answer submissions awaiting manual review.
+- **At-risk learners** — learners who have not logged in recently or whose progress has stalled, highlighted for follow-up.
+
+## Content creation tools
+
+Instructors have access to the full course authoring toolkit:
+
+- **Course and module editor** — create and reorganize the course structure with drag-and-drop module and lesson ordering.
+- **Rich-text lesson editor** — write text-based content with inline media, tables, and formatted code blocks.
+- **Video uploader** — upload video files directly or embed from YouTube, Vimeo, or Wistia.
+- **Document library** — upload and reuse PDF, DOCX, and PPTX files across lessons.
+- **Assessment builder** — create quizzes with multiple question types, configure passing scores and attempt limits, and review learner submissions. See [Assessments](/features/assessments) for full details.
+
+<Tip>
+  You can assign a co-instructor to any course from the **Course Settings → Instructors** tab. Co-instructors have the same authoring and management access as the primary instructor for that course, making it easy to collaborate on content creation or share the workload of grading and learner support.
+</Tip>
+
+## Related
+
+<Columns cols={2}>
+  <Card title="Courses" icon="book-open" href="/features/courses">
+    Build and publish courses for your learners.
+  </Card>
+  <Card title="Assessments" icon="circle-check" href="/features/assessments">
+    Create quizzes, configure grading, and review learner submissions.
+  </Card>
+</Columns>

@@ -1,80 +1,114 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quick Start
+description: Get Karma LMS running locally in under five minutes.
 ---
 
-## Get started in three steps
+This guide walks you through the minimum steps to get Karma LMS running on your machine. For a complete environment walkthrough, see the [Installation](/installation) guide.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
+Before you begin, make sure you have the following installed:
 
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
+- **Node.js 18 or later** — [nodejs.org](https://nodejs.org)
+- **npm** — bundled with Node.js
+- **Angular CLI v20+** — installed globally (see step below)
+- **Git** — [git-scm.com](https://git-scm.com)
 
-### Step 2: Deploy your changes
+## Get up and running
 
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+<Steps>
+  <Step title="Install Angular CLI">
+    Install the Angular CLI globally on your machine. You only need to do this once.
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    <CodeGroup>
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
+    ```bash npm
+    npm install -g @angular/cli
+    ```
 
-### Step 3: Go live
+    ```bash yarn
+    yarn global add @angular/cli
+    ```
 
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
+    ```bash pnpm
+    pnpm add -g @angular/cli
+    ```
 
-## Next steps
+    </CodeGroup>
 
-Now that you have your docs running, explore these key features:
+    Verify the installation:
 
-<CardGroup cols={2}>
+    ```bash
+    ng version
+    ```
+  </Step>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+  <Step title="Clone the repository">
+    Clone the Karma LMS source from GitHub.
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+    ```bash
+    git clone https://github.com/GEMS-INNOVATIONS/gems-lms-web.git
+    ```
+  </Step>
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+  <Step title="Install dependencies">
+    Navigate into the project directory and install npm packages.
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+    ```bash
+    cd gems-lms-web
+    npm install
+    ```
 
+    This installs all Angular dependencies listed in `package.json`.
+  </Step>
+
+  <Step title="Start the development server">
+    Run the Angular development server.
+
+    ```bash
+    ng serve
+    ```
+
+    The build will compile and the server will start. Wait for the output to show:
+
+    ```
+    ✔ Compiled successfully.
+    ```
+  </Step>
+
+  <Step title="Open the application">
+    Open your browser and navigate to:
+
+    ```
+    http://localhost:4200
+    ```
+
+    The Karma LMS application will load and is ready to use.
+
+    <Note>
+      The development server watches for file changes and automatically reloads the browser whenever you save a file. You do not need to restart the server during development.
+    </Note>
+  </Step>
+</Steps>
+
+## What's next
+
+<Tip>
+  When you are ready to deploy, build an optimized production bundle with `ng build`. This compiles the application with ahead-of-time (AOT) compilation, tree-shaking, and minification. Output files are written to the `dist/` directory.
+
+  ```bash
+  ng build
+  ```
+</Tip>
+
+<CardGroup cols={3}>
+  <Card title="Installation" icon="gear" href="/installation">
+    Full environment setup, CLI command reference, and troubleshooting.
+  </Card>
+  <Card title="Courses" icon="book-open" href="/features/courses">
+    Learn how to create, manage, and publish courses in Karma LMS.
+  </Card>
+  <Card title="Development setup" icon="code" href="/development/setup">
+    Project architecture, testing, and build configuration for contributors.
+  </Card>
 </CardGroup>
-
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>

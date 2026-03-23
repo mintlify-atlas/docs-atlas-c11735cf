@@ -1,0 +1,99 @@
+---
+title: Development Setup
+description: Set up your local development environment for contributing to Karma LMS.
+---
+
+## Prerequisites
+
+Before you begin, make sure you have the following tools installed:
+
+<CardGroup cols={2}>
+  <Card title="Node.js 18+" icon="node-js">
+    Required runtime for Angular CLI and npm scripts.
+  </Card>
+  <Card title="npm 9+" icon="npm">
+    Package manager for installing project dependencies.
+  </Card>
+  <Card title="Angular CLI v20+" icon="angular">
+    Command-line interface for building, serving, and scaffolding the app.
+  </Card>
+  <Card title="Git" icon="git-alt">
+    Version control for cloning the repository and managing changes.
+  </Card>
+</CardGroup>
+
+A code editor is also required. **VS Code** is recommended for its Angular ecosystem support.
+
+## Getting started
+
+<Steps>
+  <Step title="Fork and clone the repository">
+    Fork the `gems-lms-web` repository on GitHub, then clone your fork locally:
+
+    ```bash
+    git clone https://github.com/<your-username>/gems-lms-web.git
+    cd gems-lms-web
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all project dependencies using npm:
+
+    ```bash
+    npm install
+    ```
+
+    This installs Angular, its peer dependencies, and all packages listed in `package.json`.
+  </Step>
+
+  <Step title="Start the development server">
+    Start the local development server with Angular CLI:
+
+    ```bash
+    ng serve
+    ```
+
+    <Note>
+      The app reloads automatically whenever you save a file. You do not need to restart the server manually after making changes.
+    </Note>
+  </Step>
+
+  <Step title="Open the app in your browser">
+    Visit [http://localhost:4200](http://localhost:4200) to see Karma LMS running locally. The page will reflect your changes in real time.
+  </Step>
+</Steps>
+
+## Code scaffolding
+
+Angular CLI provides `ng generate` to create new files following Angular conventions. Use it to avoid writing boilerplate by hand.
+
+<CodeGroup>
+
+```bash Generate a component
+ng generate component component-name
+```
+
+```bash Generate a service
+ng generate service service-name
+```
+
+```bash Generate a module
+ng generate module module-name
+```
+
+```bash List all available schematics
+ng generate --help
+```
+
+</CodeGroup>
+
+Run `ng generate --help` to see the full list of schematics available in your Angular CLI version, including guards, pipes, directives, and more.
+
+## Recommended VS Code extensions
+
+<Tip>
+  Install these two extensions to get inline Angular template validation, autocompletion, and linting directly in your editor:
+
+  - **Angular Language Service** — provides type-checking and autocompletion inside Angular templates.
+  - **ESLint** — surfaces linting errors as you type, keeping your code consistent with the project's style rules.
+</Tip>

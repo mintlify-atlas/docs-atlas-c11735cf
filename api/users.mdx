@@ -1,0 +1,216 @@
+---
+title: Users API
+description: Manage learner and instructor user accounts via the Karma LMS API.
+---
+
+The Users API lets you create and manage accounts for everyone on your Karma LMS platform. Users are assigned one of three roles — `admin`, `instructor`, or `learner` — which control what they can see and do.
+
+<Note>
+  Only `admin` users can create, update, or delete other users. Instructors and learners can read their own user record via `GET /api/v1/users/:id`.
+</Note>
+
+## Role reference
+
+<AccordionGroup>
+  <Accordion title="admin">
+    Full access to all API resources. Can manage users, courses, enrollments, and assessments across the entire platform.
+  </Accordion>
+  <Accordion title="instructor">
+    Can create and manage their own courses and assessments. Can view enrolled learners' progress. Cannot manage other users.
+  </Accordion>
+  <Accordion title="learner">
+    Can view published courses they are enrolled in, submit assessments, and track their own progress. Read-only access.
+  </Accordion>
+</AccordionGroup>
+
+## The user object
+
+<ResponseField name="id" type="string" required>
+  Unique identifier for the user. Format: `usr_<alphanumeric>`.
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  The user's full name.
+</ResponseField>
+
+<ResponseField name="email" type="string" required>
+  The user's email address. Must be unique across the platform.
+</ResponseField>
+
+<ResponseField name="role" type="string" required>
+  The user's role. One of `admin`, `instructor`, or `learner`.
+</ResponseField>
+
+<ResponseField name="created_at" type="string" required>
+  ISO 8601 timestamp of when the user account was created.
+</ResponseField>
+
+<ResponseField name="last_login" type="string">
+  ISO 8601 timestamp of the user's most recent successful login. `null` if the user has never logged in.
+</ResponseField>
+
+---
+
+## List users
+
+`GET /api/v1/users`
+
+Returns a paginated list of all user accounts. Requires the `admin` role.
+
+### Query parameters
+
+<ParamField query="page" type="number" default="1">
+  Page number to retrieve.
+</ParamField>
+
+<ParamField query="per_page" type="number" default="20">
+  Number of users per page. Maximum 100.
+</ParamField>
+
+<ParamField query="role" type="string">
+  Filter by user role. One of `admin`, `instructor`, or `learner`.
+</ParamField>
+
+### Example
+
+<CodeGroup>
+
+```bash cURL
+curl https://your-domain.com/api/v1/users?role=learner&per_page=5 \
+  -H "Authorization: Bearer <access_token>"
+```
+
+```json response
+{
+  "data": [
+    {
+      "id": "usr_lrn001",
+      "name": "Alice Chen",
+      "email": "alice.chen@example.com",
+      "role": "learner",
+      "created_at": "2025-09-12T08:00:00Z",
+      "last_login": "2026-03-22T17:45:00Z"
+    },
+    {
+      "id": "usr_lrn002",
+      "name": "Ben Okafor",
+      "email": "ben.okafor@example.com",
+      "role": "learner",
+      "created_at": "2025-10-05T11:30:00Z",
+      "last_login": "2026-03-20T09:15:00Z"
+    }
+  ],
+  "meta": {
+    "total": 218,
+    "page": 1,
+    "per_page": 5
+  },
+  "error": null
+}
+```
+
+</CodeGroup>
+
+---
+
+## Get a user
+
+`GET /api/v1/users/:id`
+
+Returns a single user by their ID. Admins can retrieve any user. Non-admin users can only retrieve their own record.
+
+```bash
+curl https://your-domain.com/api/v1/users/usr_lrn001 \
+  -H "Authorization: Bearer <access_token>"
+```
+
+---
+
+## Create a user
+
+`POST /api/v1/users`
+
+Creates a new user account. Requires the `admin` role.
+
+### Request body
+
+<ParamField body="name" type="string" required>
+  The user's full name. Between 2 and 100 characters.
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  The user's email address. Must be unique across the platform.
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  Initial password for the account. Minimum 8 characters. Users can change this after first login.
+</ParamField>
+
+<ParamField body="role" type="string" required>
+  The user's role. Must be one of `admin`, `instructor`, or `learner`.
+</ParamField>
+
+### Example
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://your-domain.com/api/v1/users \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Sarah Müller",
+    "email": "sarah.muller@example.com",
+    "password": "Temp@Pass1!",
+    "role": "instructor"
+  }'
+```
+
+```json response
+{
+  "data": {
+    "id": "usr_ins045",
+    "name": "Sarah Müller",
+    "email": "sarah.muller@example.com",
+    "role": "instructor",
+    "created_at": "2026-03-23T10:00:00Z",
+    "last_login": null
+  },
+  "meta": null,
+  "error": null
+}
+```
+
+</CodeGroup>
+
+---
+
+## Update a user
+
+`PUT /api/v1/users/:id`
+
+Updates an existing user account. Admins can update any user. Non-admin users can only update their own `name` and `password`.
+
+```bash
+curl -X PUT https://your-domain.com/api/v1/users/usr_ins045 \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Sarah Mueller"}'
+```
+
+---
+
+## Delete a user
+
+`DELETE /api/v1/users/:id`
+
+Permanently deletes a user account. Requires the `admin` role.
+
+<Warning>
+  Deleting a user also removes all of their enrollments and assessment submission history. This action is irreversible.
+</Warning>
+
+```bash
+curl -X DELETE https://your-domain.com/api/v1/users/usr_lrn002 \
+  -H "Authorization: Bearer <access_token>"
+```

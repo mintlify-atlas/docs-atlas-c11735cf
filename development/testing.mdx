@@ -1,0 +1,80 @@
+---
+title: Testing
+description: Run and write tests for Karma LMS using Karma and Angular testing utilities.
+---
+
+## Overview
+
+Angular CLI projects use **Karma** as the default test runner, paired with **Jasmine** as the testing framework. Test files follow the `*.spec.ts` naming convention and are co-located with the source files they test.
+
+When you run `ng test`, Karma launches a browser, compiles all `*.spec.ts` files, and reports results both in the terminal and in the browser window.
+
+## Running unit tests
+
+<CodeGroup>
+
+```bash Run all tests (watch mode)
+ng test
+```
+
+```bash Run once and exit
+ng test --no-watch
+```
+
+```bash Run with code coverage
+ng test --code-coverage
+```
+
+</CodeGroup>
+
+In watch mode (`ng test`), Karma re-runs affected tests automatically whenever you save a source file. This is the recommended mode during active development.
+
+When `--code-coverage` is passed, a coverage report is generated in the `coverage/` directory. Open `coverage/index.html` in a browser to explore which lines, branches, and functions are covered.
+
+## Writing unit tests
+
+Angular provides `TestBed` for configuring test modules and `ComponentFixture` for interacting with components in isolation.
+
+```typescript
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { CoursesComponent } from './courses.component';
+
+describe('CoursesComponent', () => {
+  let component: CoursesComponent;
+  let fixture: ComponentFixture<CoursesComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [CoursesComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(CoursesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+```
+
+For async operations, use Angular's `fakeAsync` and `tick` utilities, or `async`/`await` with `fixture.whenStable()`.
+
+## End-to-end tests
+
+End-to-end (E2E) tests simulate real user interactions across the full application stack.
+
+```bash
+ng e2e
+```
+
+<Note>
+  Angular CLI does not include an E2E framework by default. You must install and configure a framework such as **Cypress** or **Playwright** separately before `ng e2e` will work. Follow the setup instructions for your chosen framework to register it as the E2E builder in `angular.json`.
+</Note>
+
+## Code coverage
+
+<Tip>
+  Aim for high coverage in services and utility functions, where business logic is concentrated. For components, focus on testing the behavior visible to users rather than implementation details. A coverage report showing which branches are untested is more actionable than a single percentage target.
+</Tip>

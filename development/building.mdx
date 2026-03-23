@@ -1,0 +1,96 @@
+---
+title: Building
+description: Build Karma LMS for production deployment.
+---
+
+## Overview
+
+Running `ng build` compiles the Angular application, runs the TypeScript compiler, bundles all modules, and writes the output to the `dist/` directory. The build process is configured in `angular.json` and varies depending on the target configuration.
+
+## Build commands
+
+<CodeGroup>
+
+```bash Development build
+ng build
+```
+
+```bash Production build
+ng build --configuration production
+```
+
+```bash Custom configuration (e.g. staging)
+ng build --configuration staging
+```
+
+</CodeGroup>
+
+<Warning>
+  Always use `--configuration production` when building for a production deployment. Omitting this flag produces a development build that is unminified, includes source maps, and skips ahead-of-time (AOT) compilation — it is not suitable for production.
+</Warning>
+
+## Development vs. production builds
+
+<Tabs>
+  <Tab title="Development">
+    Running `ng build` without a configuration flag uses the default development settings:
+
+    - No minification — output is readable for debugging
+    - Source maps included
+    - JIT (Just-in-Time) compilation
+    - Faster build times
+
+    Use this for local verification of build output, not for deployment.
+  </Tab>
+
+  <Tab title="Production">
+    Running `ng build --configuration production` applies the following optimizations:
+
+    - **Minification** — whitespace and comments stripped from HTML, CSS, and JS
+    - **Tree-shaking** — unused code removed from the final bundle
+    - **AOT compilation** — templates compiled at build time, not in the browser
+    - **Source maps disabled** — no mapping files exposed in the deployed output
+    - **Bundle budgets** — Angular CLI warns or errors if bundle sizes exceed configured limits
+
+    This configuration is defined under `configurations.production` in `angular.json`.
+  </Tab>
+</Tabs>
+
+## Build output
+
+After a successful build, the `dist/` directory contains everything needed to serve the application:
+
+<Tree>
+  <Tree.Folder name="dist" defaultOpen>
+    <Tree.Folder name="gems-lms-web" defaultOpen>
+      <Tree.File name="index.html" />
+      <Tree.File name="main.js" />
+      <Tree.File name="styles.css" />
+      <Tree.Folder name="assets">
+        <Tree.File name="(images, fonts, static files)" />
+      </Tree.Folder>
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
+
+| File | Description |
+|---|---|
+| `index.html` | Entry point for the application |
+| `main.js` | Bundled application code (hashed filename in production) |
+| `styles.css` | Global stylesheets (hashed filename in production) |
+| `assets/` | Static assets copied as-is from `src/assets/` |
+
+<Note>
+  In a production build, filenames include a content hash (e.g., `main.abc123.js`). This enables long-term browser caching: files only change their names when their content changes, so browsers can safely cache them indefinitely.
+</Note>
+
+## Deployment
+
+The contents of `dist/gems-lms-web/` are a static site. Deploy them by copying the directory to any static web server or CDN:
+
+```bash
+# Example: copy to a static server directory
+cp -r dist/gems-lms-web/* /var/www/html/
+```
+
+Because Karma LMS is an Angular SPA, configure your server to serve `index.html` for all routes so that client-side routing works correctly. On nginx, this is done with a `try_files $uri $uri/ /index.html;` directive.

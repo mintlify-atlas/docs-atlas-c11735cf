@@ -1,0 +1,323 @@
+---
+title: Assessments API
+description: Manage assessments, questions, and learner submissions via the Karma LMS API.
+---
+
+Assessments are quizzes attached to courses. Instructors create assessments with a set of questions and a passing score threshold. Learners submit answers and receive a scored result indicating whether they passed.
+
+<Note>
+  Assessments are linked to courses. A learner must be actively enrolled in a course to submit its assessments.
+</Note>
+
+## The assessment object
+
+<ResponseField name="id" type="string" required>
+  Unique identifier for the assessment. Format: `asmnt_<alphanumeric>`.
+</ResponseField>
+
+<ResponseField name="course_id" type="string" required>
+  The ID of the course this assessment belongs to.
+</ResponseField>
+
+<ResponseField name="title" type="string" required>
+  Display title of the assessment.
+</ResponseField>
+
+<ResponseField name="passing_score" type="number" required>
+  Minimum percentage score required to pass, e.g. `70` for 70%.
+</ResponseField>
+
+<ResponseField name="time_limit_minutes" type="number">
+  Time allowed to complete the assessment in minutes. `null` means no time limit.
+</ResponseField>
+
+<ResponseField name="question_count" type="number" required>
+  Total number of questions in the assessment.
+</ResponseField>
+
+---
+
+## List assessments
+
+`GET /api/v1/assessments`
+
+Returns a paginated list of assessments. Filter by course to retrieve all assessments for a specific course.
+
+### Query parameters
+
+<ParamField query="course_id" type="string">
+  Filter assessments by course ID. Recommended when retrieving assessments for a specific course.
+</ParamField>
+
+<ParamField query="page" type="number" default="1">
+  Page number to retrieve.
+</ParamField>
+
+<ParamField query="per_page" type="number" default="20">
+  Number of assessments per page. Maximum 100.
+</ParamField>
+
+### Example
+
+<CodeGroup>
+
+```bash cURL
+curl "https://your-domain.com/api/v1/assessments?course_id=crs_abc123" \
+  -H "Authorization: Bearer <access_token>"
+```
+
+```json response
+{
+  "data": [
+    {
+      "id": "asmnt_qrs001",
+      "course_id": "crs_abc123",
+      "title": "Module 1 — Safety Basics Quiz",
+      "passing_score": 80,
+      "time_limit_minutes": 30,
+      "question_count": 15
+    },
+    {
+      "id": "asmnt_tuv002",
+      "course_id": "crs_abc123",
+      "title": "Final Assessment",
+      "passing_score": 75,
+      "time_limit_minutes": 60,
+      "question_count": 40
+    }
+  ],
+  "meta": {
+    "total": 2,
+    "page": 1,
+    "per_page": 20
+  },
+  "error": null
+}
+```
+
+</CodeGroup>
+
+---
+
+## Get an assessment
+
+`GET /api/v1/assessments/:id`
+
+Returns a single assessment by its ID, including the full list of questions.
+
+```bash
+curl https://your-domain.com/api/v1/assessments/asmnt_qrs001 \
+  -H "Authorization: Bearer <access_token>"
+```
+
+---
+
+## Create an assessment
+
+`POST /api/v1/assessments`
+
+Creates a new assessment for a course. Requires the `admin` or `instructor` role. Questions are added after creation via a separate questions endpoint.
+
+### Request body
+
+<ParamField body="course_id" type="string" required>
+  The ID of the course to attach this assessment to.
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Display title for the assessment. Between 3 and 200 characters.
+</ParamField>
+
+<ParamField body="passing_score" type="number" required>
+  Minimum percentage score to pass, as an integer from `1` to `100`.
+</ParamField>
+
+<ParamField body="time_limit_minutes" type="number">
+  Time limit in minutes. Omit or pass `null` for no time limit.
+</ParamField>
+
+### Example
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://your-domain.com/api/v1/assessments \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "course_id": "crs_abc123",
+    "title": "End-of-Module Knowledge Check",
+    "passing_score": 70,
+    "time_limit_minutes": 20
+  }'
+```
+
+```json response
+{
+  "data": {
+    "id": "asmnt_wx3890",
+    "course_id": "crs_abc123",
+    "title": "End-of-Module Knowledge Check",
+    "passing_score": 70,
+    "time_limit_minutes": 20,
+    "question_count": 0
+  },
+  "meta": null,
+  "error": null
+}
+```
+
+</CodeGroup>
+
+---
+
+## Submit an assessment
+
+`POST /api/v1/assessments/:id/submissions`
+
+Submits a learner's answers for scoring. Returns the result immediately, including score and per-answer correctness.
+
+### Request body
+
+<ParamField body="answers" type="array" required>
+  Array of answer objects, one per question.
+  <Expandable title="answer object properties">
+    <ParamField body="question_id" type="string" required>
+      The ID of the question being answered.
+    </ParamField>
+    <ParamField body="selected_option_id" type="string" required>
+      The ID of the option the learner selected.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Example
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST https://your-domain.com/api/v1/assessments/asmnt_qrs001/submissions \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "answers": [
+      { "question_id": "q_001", "selected_option_id": "opt_a" },
+      { "question_id": "q_002", "selected_option_id": "opt_c" },
+      { "question_id": "q_003", "selected_option_id": "opt_b" }
+    ]
+  }'
+```
+
+```json response
+{
+  "data": {
+    "submission_id": "sub_yz4567",
+    "assessment_id": "asmnt_qrs001",
+    "user_id": "usr_lrn001",
+    "score": 86,
+    "passed": true,
+    "submitted_at": "2026-03-23T11:15:00Z",
+    "answers": [
+      {
+        "question_id": "q_001",
+        "selected_option_id": "opt_a",
+        "correct": true
+      },
+      {
+        "question_id": "q_002",
+        "selected_option_id": "opt_c",
+        "correct": false,
+        "correct_option_id": "opt_b"
+      },
+      {
+        "question_id": "q_003",
+        "selected_option_id": "opt_b",
+        "correct": true
+      }
+    ]
+  },
+  "meta": null,
+  "error": null
+}
+```
+
+</CodeGroup>
+
+## Submission result schema
+
+<ResponseField name="submission_id" type="string" required>
+  Unique identifier for this submission.
+</ResponseField>
+
+<ResponseField name="assessment_id" type="string" required>
+  The ID of the assessment that was submitted.
+</ResponseField>
+
+<ResponseField name="user_id" type="string" required>
+  The ID of the learner who submitted.
+</ResponseField>
+
+<ResponseField name="score" type="number" required>
+  Percentage score from `0` to `100`.
+</ResponseField>
+
+<ResponseField name="passed" type="boolean" required>
+  `true` if the score meets or exceeds the assessment's `passing_score`.
+</ResponseField>
+
+<ResponseField name="submitted_at" type="string" required>
+  ISO 8601 timestamp of when the submission was received.
+</ResponseField>
+
+<ResponseField name="answers" type="array" required>
+  Per-question result breakdown.
+  <Expandable title="answer result properties">
+    <ResponseField name="question_id" type="string" required>
+      ID of the question.
+    </ResponseField>
+    <ResponseField name="selected_option_id" type="string" required>
+      The option ID the learner chose.
+    </ResponseField>
+    <ResponseField name="correct" type="boolean" required>
+      Whether the selected answer was correct.
+    </ResponseField>
+    <ResponseField name="correct_option_id" type="string">
+      The correct option ID. Only present when `correct` is `false`.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Get a submission
+
+`GET /api/v1/assessments/:id/submissions/:submission_id`
+
+Retrieves the result of a specific submission by its ID.
+
+```bash
+curl https://your-domain.com/api/v1/assessments/asmnt_qrs001/submissions/sub_yz4567 \
+  -H "Authorization: Bearer <access_token>"
+```
+
+---
+
+## Retake policy
+
+<Tip>
+  By default, learners may retake an assessment unlimited times. Each submission is stored independently. Course completion is determined by the learner's most recent passing submission.
+</Tip>
+
+Instructors can configure a maximum number of attempts per assessment. When the limit is reached, submitting returns a `403` response:
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "ATTEMPT_LIMIT_REACHED",
+    "message": "You have reached the maximum number of attempts for this assessment.",
+    "details": []
+  }
+}
+```

@@ -1,0 +1,94 @@
+---
+title: Learners
+description: Manage learner accounts, enrollments, and access in Karma LMS.
+keywords: ['learners', 'enrollment', 'users', 'accounts', 'LMS', 'Karma']
+---
+
+Learners are the end-users of Karma LMS — the people who take courses, complete assessments, and accumulate progress. Admins and instructors manage learner accounts, control enrollment, and review learner performance from the **Users** section of the platform.
+
+## Adding a learner
+
+<Steps>
+  <Step title="Navigate to Users">
+    From the left sidebar, select **Users**. You will see a searchable, filterable list of all accounts on the platform.
+  </Step>
+  <Step title="Create a new account">
+    Click **Invite User** or **Create User** in the top-right corner.
+
+    - **Invite User** — sends an email invitation to the learner. They set their own password during account activation.
+    - **Create User** — creates the account immediately with a temporary password. The learner is prompted to change it on first login.
+
+    Fill in the learner's first name, last name, and email address.
+  </Step>
+  <Step title="Assign the Learner role">
+    Set the user's role to **Learner**. This grants access to enrolled courses and the learner dashboard, but not to course authoring or administrative tools. Click **Save** to create the account.
+  </Step>
+  <Step title="Enroll the learner in a course (optional)">
+    After saving, you can immediately enroll the learner in one or more courses from their profile page. Click **Enroll in Course**, search for the course, and confirm. The learner will see the course in their dashboard on next login.
+  </Step>
+</Steps>
+
+## Enrollment workflows
+
+<Tabs>
+  <Tab title="Self-enrollment">
+    When a course is set to **Open enrollment**, learners can browse the course catalog and click **Enroll** to join on their own. No admin action is required. This is suitable for on-demand, self-paced content available to all users.
+  </Tab>
+  <Tab title="Admin-assigned enrollment">
+    Admins and instructors can enroll learners directly from the course's **Learners** tab or from a learner's profile page. Assigned enrollment is required for invite-only courses and is the standard approach for structured cohort programs.
+  </Tab>
+</Tabs>
+
+## Learner profile
+
+Each learner has a profile page accessible to admins and instructors at **Users → [Learner Name]**. The profile contains:
+
+- **Personal information** — name, email, role, account creation date, and last active date.
+- **Enrolled courses** — a list of every course the learner is enrolled in, with current progress percentage.
+- **Completion status** — courses marked as complete, in-progress, or not started.
+- **Assessment history** — scores and attempt dates for any quizzes or assessments the learner has taken.
+
+Learners can view their own profile and progress by navigating to **My Profile** in the top-right account menu.
+
+## Bulk enrollment
+
+To enroll multiple learners at once, use the bulk enrollment tools available in the **Courses → [Course Name] → Learners** tab.
+
+<Steps>
+  <Step title="Open the course learner list">
+    Navigate to the course and open the **Learners** tab.
+  </Step>
+  <Step title="Click Bulk Enroll">
+    Click **Bulk Enroll** to open the enrollment dialog.
+  </Step>
+  <Step title="Upload a CSV or select users">
+    Either upload a CSV file with a column of learner email addresses, or use the multi-select search to choose learners from the existing user list.
+
+    CSV format:
+
+    ```csv learners.csv
+    email
+    alice@example.com
+    bob@example.com
+    carol@example.com
+    ```
+  </Step>
+  <Step title="Confirm enrollment">
+    Review the list of learners to be enrolled and click **Confirm**. Enrolled learners receive an email notification with a link to the course.
+  </Step>
+</Steps>
+
+<Note>
+  Learner data — including names, email addresses, progress records, and assessment scores — is treated as personally identifiable information (PII). Karma LMS does not share learner data with third parties. Admins should follow their organization's data retention and privacy policies when exporting or archiving learner records.
+</Note>
+
+## Related
+
+<Columns cols={2}>
+  <Card title="Courses" icon="book-open" href="/features/courses">
+    Create and manage the courses your learners enroll in.
+  </Card>
+  <Card title="Progress Tracking" icon="chart-line" href="/features/progress-tracking">
+    Monitor individual and class-wide learner progress and completion.
+  </Card>
+</Columns>
