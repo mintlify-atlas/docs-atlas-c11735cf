@@ -60,18 +60,15 @@ ng build --configuration staging
 
 After a successful build, the `dist/` directory contains everything needed to serve the application:
 
-<Tree>
-  <Tree.Folder name="dist" defaultOpen>
-    <Tree.Folder name="gems-lms-web" defaultOpen>
-      <Tree.File name="index.html" />
-      <Tree.File name="main.js" />
-      <Tree.File name="styles.css" />
-      <Tree.Folder name="assets">
-        <Tree.File name="(images, fonts, static files)" />
-      </Tree.Folder>
-    </Tree.Folder>
-  </Tree.Folder>
-</Tree>
+```text
+dist/
+└── gems-lms-web/
+    ├── index.html
+    ├── main.js
+    ├── styles.css
+    └── assets/
+        └── (images, fonts, static files)
+```
 
 | File | Description |
 |---|---|

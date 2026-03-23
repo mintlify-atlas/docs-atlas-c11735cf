@@ -17,27 +17,22 @@ flowchart LR
 
 The project follows the standard Angular CLI directory layout:
 
-<Tree>
-  <Tree.Folder name="src" defaultOpen>
-    <Tree.Folder name="app" defaultOpen>
-      <Tree.File name="app.module.ts" />
-      <Tree.File name="app.component.ts" />
-      <Tree.File name="app-routing.module.ts" />
-    </Tree.Folder>
-    <Tree.Folder name="assets">
-      <Tree.File name="(images, fonts, static files)" />
-    </Tree.Folder>
-    <Tree.Folder name="environments">
-      <Tree.File name="environment.ts" />
-      <Tree.File name="environment.prod.ts" />
-    </Tree.Folder>
-  </Tree.Folder>
-  <Tree.Folder name="dist">
-    <Tree.File name="(compiled build output)" />
-  </Tree.Folder>
-  <Tree.File name="angular.json" />
-  <Tree.File name="package.json" />
-</Tree>
+```text
+src/
+├── app/
+│   ├── app.module.ts
+│   ├── app.component.ts
+│   └── app-routing.module.ts
+├── assets/
+│   └── (images, fonts, static files)
+└── environments/
+    ├── environment.ts
+    └── environment.prod.ts
+dist/
+    └── (compiled build output)
+angular.json
+package.json
+```
 
 | Directory | Purpose |
 |---|---|
